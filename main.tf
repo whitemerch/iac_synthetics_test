@@ -16,13 +16,12 @@ resource "aws_lb_target_group" "this" {
   tags        = local.common_tags
 }
 
-resource "aws_acm_certificate" "service" {
-  domain_name       = format("%s.%s", var.service, local.domain)
-  validation_method = "DNS"
-
-  lifecycle {
-    create_before_destroy = true
-  }
+resource "aws_lb" "this" {
+  name               = format("cross-cluster-nlb-%s", var.service)
+  internal           = true
+  load_balancer_type = "network"
+  security_groups    = [aws_security_group.this.id]
+  subnets            = var.subnets
 
   tags = local.common_tags
 }
