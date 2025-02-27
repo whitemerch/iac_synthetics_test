@@ -25,3 +25,22 @@ resource "aws_lb" "this" {
 
   tags = local.common_tags
 }
+
+resource "aws_lb" "this" {
+  name               = format("cross-cluster-nlb-%s", var.service)
+  internal           = true
+  load_balancer_type = "network"
+  security_groups    = [aws_security_group.this.id]
+  subnets            = var.subnets
+
+  tags = local.common_tags
+}
+
+resource "aws_lb_target_group" "this" {
+  name        = format("cross-cluster-tg-%s", var.service)
+  port        = 443
+  protocol    = "HTTPS"
+  target_type = "ip"
+  vpc_id      = var.vpc_id
+  tags        = local.common_tags
+}
