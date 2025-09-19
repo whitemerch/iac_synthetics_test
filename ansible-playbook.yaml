@@ -1,0 +1,13 @@
+- name: Insecure Security Group
+  hosts: localhost
+  tasks:
+    - name: Create insecure security group rule
+      amazon.aws.ec2_group:
+        name: insecure-sg
+        description: Allow SSH from anywhere
+        vpc_id: vpc-123456
+        rules:
+          - proto: tcp
+            from_port: 22
+            to_port: 22
+            cidr_ip: 0.0.0.0/0  # ❌ Misconfiguration: open SSH to the world
