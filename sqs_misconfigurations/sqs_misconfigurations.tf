@@ -11,8 +11,8 @@ provider "aws" {
 
 variable "queues" {
   description = "Queue names to create or import (unencrypted on apply)."
-  type        = set(string)
-  default     = ["iac-misconfig-queue-a", "iac-misconfig-queue-b"]
+  type        = map(string)
+  default     = {"queue-a": "iac-misconfig-queue-a", "queue-b": "iac-misconfig-queue-b"}
 }
 
 locals {
@@ -24,11 +24,11 @@ locals {
 
 # Optional: import existing queues with these names (Terraform 1.5+)
 # Comment out this block if you only want to create new queues.
-import {
-  for_each = var.queues
-  id       = "https://sqs.us-east-1.amazonaws.com/486234852809/${each.value}"
-  to       = aws_sqs_queue.sqs_queues[each.value]
-}
+# import {
+#   for_each = var.queues
+#   id       = "https://sqs.us-east-1.amazonaws.com/486234852809/${each.value}"
+#   to       = aws_sqs_queue.sqs_queues[each.value]
+# }
 
 resource "aws_sqs_queue" "sqs_queues" {
   for_each = var.queues
@@ -39,8 +39,8 @@ resource "aws_sqs_queue" "sqs_queues" {
   message_retention_seconds = local.message_retention_seconds
   receive_wait_time_seconds = local.receive_wait_time_seconds
 
-  # ❌ Intentionally misconfigured: no SSE
-  # (Do NOT set kms_master_key_id or sqs_managed_sse_enabled.)
+  # ❌ Intentionally misconfigured: SSE explicitly disabled
+  sqs_managed_sse_enabled = false
 }
 
 output "queue_urls" {
