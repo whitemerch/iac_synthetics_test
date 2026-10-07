@@ -16,6 +16,7 @@ locals {
   receive_wait_time_seconds = 10
 }
 
+# Re-index trigger for the IaC code-location indexer
 resource "aws_sqs_queue" "unencrypted_queue" {
   name                      = "iac-test-unencrypted-queue"
   delay_seconds             = local.delay_seconds
